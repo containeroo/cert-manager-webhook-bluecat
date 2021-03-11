@@ -1,54 +1,71 @@
-# ACME webhook example
+# WORK IN PROGRESS
 
-The ACME issuer type supports an optional 'webhook' solver, which can be used
-to implement custom DNS01 challenge solving logic.
+## description
 
-This is useful if you need to use cert-manager with a DNS provider that is not
-officially supported in cert-manager core.
+cert-manager webhook is a plugin for bluecat to create letsencrypt certificates.
 
-## Why not in core?
+## usage
 
-As the project & adoption has grown, there has been an influx of DNS provider
-pull requests to our core codebase. As this number has grown, the test matrix
-has become un-maintainable and so, it's not possible for us to certify that
-providers work to a sufficient level.
+* deploy cert-manager, see [here](https://github.com/jetstack/cert-manager)
+* create ClusterIssuer & Certificate, see examples
+* deploy plugin with helm, see [here](https://github.com/containeroo/helm-charts/tree/master/charts/cert-manager-webhook-bluecat)
 
-By creating this 'interface' between cert-manager and DNS providers, we allow
-users to quickly iterate and test out new integrations, and then packaging
-those up themselves as 'extensions' to cert-manager.
+## Examples
 
-We can also then provide a standardised 'testing framework', or set of
-conformance tests, which allow us to validate the a DNS provider works as
-expected.
-
-## Creating your own webhook
-
-Webhook's themselves are deployed as Kubernetes API services, in order to allow
-administrators to restrict access to webhooks with Kubernetes RBAC.
-
-This is important, as otherwise it'd be possible for anyone with access to your
-webhook to complete ACME challenge validations and obtain certificates.
-
-To make the set up of these webhook's easier, we provide a template repository
-that can be used to get started quickly.
-
-### Creating your own repository
-
-### Running the test suite
-
-All DNS providers **must** run the DNS01 provider conformance testing suite,
-else they will have undetermined behaviour when used with cert-manager.
-
-**It is essential that you configure and run the test suite when creating a
-DNS01 webhook.**
-
-An example Go test file has been provided in [main_test.go](https://github.com/jetstack/cert-manager-webhook-example/blob/master/main_test.go).
-
-You can run the test suite with:
+### ClusterIssuer
 
 ```bash
-$ TEST_ZONE_NAME=example.com. make test
+cat <<EOF | kubectl apply -f -
+---
+apiVersion: cert-manager.io/v1
+kind: ClusterIssuer
+metadata:
+  name: letsencrypt-staging
+spec:
+  acme:
+    email: acme@example.com
+    privateKeySecretRef:
+      name: le-staging-account-key
+    server: https://acme-staging-v02.api.letsencrypt.org/directory
+    solvers:
+    - selector: {}
+      dns01:
+        webhook:
+          groupName: acme.example.com
+          solverName: infomaniak
+          config:
+            apiTokenSecretRef:
+              name: example-api-credentials
+              key: api-token
+EOF
 ```
 
-The example file has a number of areas you must fill in and replace with your
-own options in order for tests to pass.
+### Certificate
+
+Create a Certificate, the issued cert will be stored in the specified Secret (keys tls.crt & tls.key):
+
+```bash
+cat <<EOF | kubectl apply -f -
+---
+apiVersion: cert-manager.io/v1
+kind: Certificate
+metadata:
+  name: test-example-com
+spec:
+  secretName: test-example-com-tls
+  issuerRef:
+    name: letsencrypt-staging
+    kind: ClusterIssuer
+  dnsNames:
+  - test.example.com
+EOF
+```
+
+```bash
+kubectl get secret test-example-com-tls -o json | jq -r '.data."tls.crt"' | base64 -d | openssl x509 -text -noout | grep Subject: Subject: CN = test.example.com
+```
+
+Thanks to:
+
+* https://github.com/Infomaniak/cert-manager-webhook-infomaniak
+* https://github.com/go-acme/lego
