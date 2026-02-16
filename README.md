@@ -8,11 +8,11 @@ This repository contains a cert-manager DNS01 webhook solver for BlueCat
 Address Manager REST v2.
 
 - Webhook solver name: `bluecat-address-manager`
-- Helm chart: `deploy/bluecat-webhook`
-- Default image repo (chart): `ghcr.io/containeroo/cert-manager-webhook-bluecat-v2`
+- Official Helm chart: `containeroo/cert-manager-webhook-bluecat`
+- Default image repo: `ghcr.io/containeroo/cert-manager-webhook-bluecat`
 
 BlueCat API docs:
-https://docs.bluecatnetworks.com/r/Address-Manager-RESTful-v2-API-Guide/
+https://docs.bluecatnetworks.com/
 
 ## How It Works
 
@@ -51,8 +51,8 @@ What it does:
 1. Runs `go test ./...`
 2. Runs GoReleaser (`.goreleaser.yaml`)
 3. Builds and pushes multi-arch images to GHCR:
-   - `ghcr.io/containeroo/cert-manager-webhook-bluecat-v2:<tag>`
-   - `ghcr.io/containeroo/cert-manager-webhook-bluecat-v2:latest`
+   - `ghcr.io/containeroo/cert-manager-webhook-bluecat:<tag>`
+   - `ghcr.io/containeroo/cert-manager-webhook-bluecat:latest`
 
 Release commands:
 
@@ -63,14 +63,17 @@ git push origin v0.1.0
 
 ## Install The Webhook
 
-Install or upgrade from this repository checkout:
+Install or upgrade using the official chart repository:
 
 ```bash
-helm upgrade --install bluecat-webhook ./deploy/bluecat-webhook \
+helm repo add containeroo https://charts.containeroo.ch
+helm repo update
+
+helm upgrade --install cert-manager-webhook-bluecat containeroo/cert-manager-webhook-bluecat \
   --namespace cert-manager \
   --create-namespace \
   --set groupName=acme.bluecat.yourdomain.tld \
-  --set image.repository=ghcr.io/containeroo/cert-manager-webhook-bluecat-v2 \
+  --set image.repository=ghcr.io/containeroo/cert-manager-webhook-bluecat \
   --set image.tag=v0.1.0
 ```
 
@@ -190,8 +193,8 @@ spec:
 
 ```bash
 kubectl get apiservice | grep acme.bluecat.yourdomain.tld
-kubectl -n cert-manager get deploy,po | grep bluecat-webhook
-kubectl -n cert-manager logs deploy/bluecat-webhook
+kubectl -n cert-manager get deploy,po | grep cert-manager-webhook-bluecat
+kubectl -n cert-manager logs deploy/cert-manager-webhook-bluecat
 kubectl get challenges -A
 kubectl get orders -A
 ```

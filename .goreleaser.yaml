@@ -1,6 +1,6 @@
 ---
 version: 2
-project_name: cert-manager-webhook-bluecat-v2
+project_name: cert-manager-webhook-bluecat
 
 builds:
   - id: webhook
@@ -27,7 +27,7 @@ dockers:
       - go.sum
       - main.go
     image_templates:
-      - ghcr.io/containeroo/cert-manager-webhook-bluecat-v2:{{ .Tag }}-amd64
+      - ghcr.io/containeroo/cert-manager-webhook-bluecat:{{ .Tag }}-amd64
     build_flag_templates:
       - --pull
       - --platform=linux/amd64
@@ -52,7 +52,7 @@ dockers:
       - go.sum
       - main.go
     image_templates:
-      - ghcr.io/containeroo/cert-manager-webhook-bluecat-v2:{{ .Tag }}-arm64
+      - ghcr.io/containeroo/cert-manager-webhook-bluecat:{{ .Tag }}-arm64
     build_flag_templates:
       - --pull
       - --platform=linux/arm64
@@ -66,12 +66,12 @@ dockers:
       - --label=org.opencontainers.image.licenses=Apache-2.0
 
 docker_manifests:
-  - name_template: ghcr.io/containeroo/cert-manager-webhook-bluecat-v2:{{ .Tag }}
+  - name_template: ghcr.io/containeroo/cert-manager-webhook-bluecat:{{ .Tag }}
     image_templates:
-      - ghcr.io/containeroo/cert-manager-webhook-bluecat-v2:{{ .Tag }}-amd64
-      - ghcr.io/containeroo/cert-manager-webhook-bluecat-v2:{{ .Tag }}-arm64
+      - ghcr.io/containeroo/cert-manager-webhook-bluecat:{{ .Tag }}-amd64
+      - ghcr.io/containeroo/cert-manager-webhook-bluecat:{{ .Tag }}-arm64
 
-  - name_template: ghcr.io/containeroo/cert-manager-webhook-bluecat-v2:latest
+  - name_template: ghcr.io/containeroo/cert-manager-webhook-bluecat:latest
     image_templates:
-      - ghcr.io/containeroo/cert-manager-webhook-bluecat-v2:{{ .Tag }}-amd64
-      - ghcr.io/containeroo/cert-manager-webhook-bluecat-v2:{{ .Tag }}-arm64
+      - ghcr.io/containeroo/cert-manager-webhook-bluecat:{{ .Tag }}-amd64
+      - ghcr.io/containeroo/cert-manager-webhook-bluecat:{{ .Tag }}-arm64

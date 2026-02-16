@@ -2,7 +2,7 @@ GO ?= $(shell which go)
 OS ?= $(shell $(GO) env GOOS)
 ARCH ?= $(shell $(GO) env GOARCH)
 
-IMAGE_NAME := "ghcr.io/containeroo/cert-manager-bluecat-webhook-v2"
+IMAGE_NAME := "ghcr.io/containeroo/cert-manager-webhook-bluecat"
 IMAGE_TAG := "latest"
 
 LOCAL_IMAGE_NAME ?= bluecat-webhook
@@ -14,8 +14,6 @@ WEBHOOK_DEPLOYMENT ?= bluecat-webhook
 OUT := $(shell pwd)/_out
 
 KUBEBUILDER_VERSION=1.28.0
-
-HELM_FILES := $(shell find deploy/bluecat-webhook)
 
 test: _test/kubebuilder-$(KUBEBUILDER_VERSION)-$(OS)-$(ARCH)/etcd _test/kubebuilder-$(KUBEBUILDER_VERSION)-$(OS)-$(ARCH)/kube-apiserver _test/kubebuilder-$(KUBEBUILDER_VERSION)-$(OS)-$(ARCH)/kubectl
 	TEST_ASSET_ETCD=_test/kubebuilder-$(KUBEBUILDER_VERSION)-$(OS)-$(ARCH)/etcd \
@@ -44,16 +42,6 @@ kind-redeploy:
 	kubectl -n "$(WEBHOOK_NAMESPACE)" set image deployment/"$(WEBHOOK_DEPLOYMENT)" "*=$(LOCAL_IMAGE_NAME):$(LOCAL_IMAGE_TAG)"
 	kubectl -n "$(WEBHOOK_NAMESPACE)" rollout restart deployment/"$(WEBHOOK_DEPLOYMENT)"
 	kubectl -n "$(WEBHOOK_NAMESPACE)" rollout status deployment/"$(WEBHOOK_DEPLOYMENT)"
-
-.PHONY: rendered-manifest.yaml
-rendered-manifest.yaml: $(OUT)/rendered-manifest.yaml
-
-$(OUT)/rendered-manifest.yaml: $(HELM_FILES) | $(OUT)
-	helm template \
-	    bluecat-webhook \
-            --set image.repository=$(IMAGE_NAME) \
-            --set image.tag=$(IMAGE_TAG) \
-            deploy/bluecat-webhook > $@
 
 _test $(OUT) _test/kubebuilder-$(KUBEBUILDER_VERSION)-$(OS)-$(ARCH):
 	mkdir -p $@
