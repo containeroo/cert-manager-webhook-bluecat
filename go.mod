@@ -1,4 +1,4 @@
-module github.com/cert-manager/webhook-example
+module github.com/containeroo/cert-manager-webhook-bluecat
 
 go 1.26.0
 

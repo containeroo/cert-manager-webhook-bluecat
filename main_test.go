@@ -9,7 +9,7 @@ import (
 
 	acmetest "github.com/cert-manager/cert-manager/test/acme"
 
-	"github.com/cert-manager/webhook-example/bluecatmock"
+	"github.com/containeroo/cert-manager-webhook-bluecat/bluecatmock"
 )
 
 var (
