@@ -1,4 +1,12 @@
 {
   "$schema": "https://docs.renovatebot.com/renovate-schema.json",
-  "extends": ["config:recommended"]
+  "extends": ["config:recommended"],
+  "packageRules": [
+    {
+      "description": "Keep Kubernetes libraries aligned with cert-manager's tested dependency set",
+      "matchManagers": ["gomod"],
+      "matchPackagePrefixes": ["k8s.io/"],
+      "enabled": false
+    }
+  ]
 }
