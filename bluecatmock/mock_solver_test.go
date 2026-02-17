@@ -63,7 +63,11 @@ func TestMockSolver_Present_Cleanup(t *testing.T) {
 		msg.Id = dns.Id()
 		msg.RecursionDesired = true
 		msg.Question = make([]dns.Question, 1)
-		msg.Question[0] = dns.Question{dns.Fqdn(test.hostname), dns.TypeTXT, dns.ClassINET}
+		msg.Question[0] = dns.Question{
+			Name:   dns.Fqdn(test.hostname),
+			Qtype:  dns.TypeTXT,
+			Qclass: dns.ClassINET,
+		}
 		in, err := dns.Exchange(msg, "127.0.0.1:"+port.String())
 
 		require.NoError(t, err, "Presented record %s not resolvable", test.hostname)
@@ -89,7 +93,11 @@ func TestMockSolver_Present_Cleanup(t *testing.T) {
 		msg.Id = dns.Id()
 		msg.RecursionDesired = true
 		msg.Question = make([]dns.Question, 1)
-		msg.Question[0] = dns.Question{dns.Fqdn(test.hostname), dns.TypeTXT, dns.ClassINET}
+		msg.Question[0] = dns.Question{
+			Name:   dns.Fqdn(test.hostname),
+			Qtype:  dns.TypeTXT,
+			Qclass: dns.ClassINET,
+		}
 		in, err := dns.Exchange(msg, "127.0.0.1:"+port.String())
 
 		require.NoError(t, err, "Presented record %s not resolvable", test.hostname)
@@ -108,7 +116,11 @@ func waitForDNSServer(t *testing.T, address string) {
 		msg.Id = dns.Id()
 		msg.RecursionDesired = true
 		msg.Question = make([]dns.Question, 1)
-		msg.Question[0] = dns.Question{dns.Fqdn("startup-check.local"), dns.TypeA, dns.ClassINET}
+		msg.Question[0] = dns.Question{
+			Name:   dns.Fqdn("startup-check.local"),
+			Qtype:  dns.TypeA,
+			Qclass: dns.ClassINET,
+		}
 		_, err := dns.Exchange(msg, address)
 		return err == nil
 	}, 2*time.Second, 25*time.Millisecond, "dns server did not start on %s", address)
