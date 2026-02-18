@@ -1,24 +1,14 @@
 {
   "$schema": "https://docs.renovatebot.com/renovate-schema.json",
-  "extends": [
-    "config:recommended"
-  ],
-  "labels": [
-    "dependency"
-  ],
-  "postUpdateOptions": [
-    "gomodTidy"
-  ],
+  "extends": ["config:recommended"],
+  "labels": ["dependency"],
+  "postUpdateOptions": ["gomodTidy"],
   "packageRules": [
     {
       "description": "Keep Kubernetes libraries aligned with cert-manager's tested dependency set",
-      "matchManagers": [
-        "gomod"
-      ],
+      "matchManagers": ["gomod"],
       "enabled": false,
-      "matchPackageNames": [
-        "k8s.io/{/,}**"
-      ]
+      "matchPackageNames": ["k8s.io/{/,}**"]
     }
   ]
 }
