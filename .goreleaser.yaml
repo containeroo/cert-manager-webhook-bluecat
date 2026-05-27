@@ -21,16 +21,14 @@ dockers:
     goarch: amd64
     ids:
       - webhook
-    dockerfile: Dockerfile
-    extra_files:
-      - go.mod
-      - go.sum
-      - main.go
+    dockerfile: Dockerfile.goreleaser
     image_templates:
       - ghcr.io/containeroo/cert-manager-webhook-bluecat:{{ .Tag }}-amd64
     build_flag_templates:
       - --pull
       - --platform=linux/amd64
+      - --cache-from=type=gha,scope=cert-manager-webhook-bluecat-amd64
+      - --cache-to=type=gha,mode=max,scope=cert-manager-webhook-bluecat-amd64
       - --label=org.opencontainers.image.title={{ .ProjectName }}
       - --label=org.opencontainers.image.description=cert-manager DNS01 webhook for BlueCat Address Manager REST v2
       - --label=org.opencontainers.image.url=https://github.com/{{ .Env.GITHUB_REPOSITORY }}
@@ -46,16 +44,14 @@ dockers:
     goarch: arm64
     ids:
       - webhook
-    dockerfile: Dockerfile
-    extra_files:
-      - go.mod
-      - go.sum
-      - main.go
+    dockerfile: Dockerfile.goreleaser
     image_templates:
       - ghcr.io/containeroo/cert-manager-webhook-bluecat:{{ .Tag }}-arm64
     build_flag_templates:
       - --pull
       - --platform=linux/arm64
+      - --cache-from=type=gha,scope=cert-manager-webhook-bluecat-arm64
+      - --cache-to=type=gha,mode=max,scope=cert-manager-webhook-bluecat-arm64
       - --label=org.opencontainers.image.title={{ .ProjectName }}
       - --label=org.opencontainers.image.description=cert-manager DNS01 webhook for BlueCat Address Manager REST v2
       - --label=org.opencontainers.image.url=https://github.com/{{ .Env.GITHUB_REPOSITORY }}
