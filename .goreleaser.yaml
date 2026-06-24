@@ -14,60 +14,29 @@ builds:
       - amd64
       - arm64
 
-dockers:
-  - id: ghcr-amd64
-    use: buildx
-    goos: linux
-    goarch: amd64
-    ids:
+dockers_v2:
+  - ids:
       - webhook
     dockerfile: Dockerfile.goreleaser
-    image_templates:
-      - ghcr.io/containeroo/cert-manager-webhook-bluecat:{{ .Tag }}-amd64
-    build_flag_templates:
+    images:
+      - ghcr.io/containeroo/cert-manager-webhook-bluecat
+      - containeroo/cert-manager-webhook-bluecat
+    tags:
+      - "{{ .Tag }}"
+      - latest
+    platforms:
+      - linux/amd64
+      - linux/arm64
+    flags:
       - --pull
-      - --platform=linux/amd64
-      - --cache-from=type=gha,scope=cert-manager-webhook-bluecat-amd64
-      - --cache-to=type=gha,mode=max,scope=cert-manager-webhook-bluecat-amd64
-      - --label=org.opencontainers.image.title={{ .ProjectName }}
-      - --label=org.opencontainers.image.description=cert-manager DNS01 webhook for BlueCat Address Manager REST v2
-      - --label=org.opencontainers.image.url=https://github.com/{{ .Env.GITHUB_REPOSITORY }}
-      - --label=org.opencontainers.image.source=https://github.com/{{ .Env.GITHUB_REPOSITORY }}
-      - --label=org.opencontainers.image.version={{ .Version }}
-      - --label=org.opencontainers.image.created={{ time "2006-01-02T15:04:05Z07:00" }}
-      - --label=org.opencontainers.image.revision={{ .FullCommit }}
-      - --label=org.opencontainers.image.licenses=Apache-2.0
-
-  - id: ghcr-arm64
-    use: buildx
-    goos: linux
-    goarch: arm64
-    ids:
-      - webhook
-    dockerfile: Dockerfile.goreleaser
-    image_templates:
-      - ghcr.io/containeroo/cert-manager-webhook-bluecat:{{ .Tag }}-arm64
-    build_flag_templates:
-      - --pull
-      - --platform=linux/arm64
-      - --cache-from=type=gha,scope=cert-manager-webhook-bluecat-arm64
-      - --cache-to=type=gha,mode=max,scope=cert-manager-webhook-bluecat-arm64
-      - --label=org.opencontainers.image.title={{ .ProjectName }}
-      - --label=org.opencontainers.image.description=cert-manager DNS01 webhook for BlueCat Address Manager REST v2
-      - --label=org.opencontainers.image.url=https://github.com/{{ .Env.GITHUB_REPOSITORY }}
-      - --label=org.opencontainers.image.source=https://github.com/{{ .Env.GITHUB_REPOSITORY }}
-      - --label=org.opencontainers.image.version={{ .Version }}
-      - --label=org.opencontainers.image.created={{ time "2006-01-02T15:04:05Z07:00" }}
-      - --label=org.opencontainers.image.revision={{ .FullCommit }}
-      - --label=org.opencontainers.image.licenses=Apache-2.0
-
-docker_manifests:
-  - name_template: ghcr.io/containeroo/cert-manager-webhook-bluecat:{{ .Tag }}
-    image_templates:
-      - ghcr.io/containeroo/cert-manager-webhook-bluecat:{{ .Tag }}-amd64
-      - ghcr.io/containeroo/cert-manager-webhook-bluecat:{{ .Tag }}-arm64
-
-  - name_template: ghcr.io/containeroo/cert-manager-webhook-bluecat:latest
-    image_templates:
-      - ghcr.io/containeroo/cert-manager-webhook-bluecat:{{ .Tag }}-amd64
-      - ghcr.io/containeroo/cert-manager-webhook-bluecat:{{ .Tag }}-arm64
+      - --cache-from=type=gha,scope=cert-manager-webhook-bluecat
+      - --cache-to=type=gha,mode=max,scope=cert-manager-webhook-bluecat
+    labels:
+      org.opencontainers.image.title: "{{ .ProjectName }}"
+      org.opencontainers.image.description: cert-manager DNS01 webhook for BlueCat Address Manager REST v2
+      org.opencontainers.image.url: https://github.com/containeroo/cert-manager-webhook-bluecat
+      org.opencontainers.image.source: https://github.com/containeroo/cert-manager-webhook-bluecat
+      org.opencontainers.image.version: "{{ .Version }}"
+      org.opencontainers.image.created: '{{ time "2006-01-02T15:04:05Z07:00" }}'
+      org.opencontainers.image.revision: "{{ .FullCommit }}"
+      org.opencontainers.image.licenses: Apache-2.0
