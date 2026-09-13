@@ -1,3 +1,4 @@
+// Command cert-manager-webhook-bluecat provides a cert-manager DNS01 webhook.
 package main
 
 import (
@@ -163,7 +164,7 @@ func (c *customDNSProviderSolver) Present(ch *v1alpha1.ChallengeRequest) error {
 		return nil
 	}
 
-	records, err = cl.findMatchingTXTRecords(ctx, zoneID, fqdn, relativeName, ch.Key)
+	_, err = cl.findMatchingTXTRecords(ctx, zoneID, fqdn, relativeName, ch.Key)
 	if err != nil {
 		return err
 	}
@@ -235,7 +236,7 @@ func (c *customDNSProviderSolver) CleanUp(ch *v1alpha1.ChallengeRequest) error {
 // provider accounts.
 // The stopCh can be used to handle early termination of the webhook, in cases
 // where a SIGTERM or similar signal is sent to the webhook process.
-func (c *customDNSProviderSolver) Initialize(kubeClientConfig *rest.Config, stopCh <-chan struct{}) error {
+func (c *customDNSProviderSolver) Initialize(kubeClientConfig *rest.Config, _ <-chan struct{}) error {
 	cl, err := kubernetes.NewForConfig(kubeClientConfig)
 	if err != nil {
 		return err
@@ -387,7 +388,7 @@ func loginSession(ctx context.Context, httpClient *http.Client, baseURL, usernam
 	if err != nil {
 		return "", fmt.Errorf("bluecat session auth failed: %w", err)
 	}
-	defer resp.Body.Close()
+	defer func() { _ = resp.Body.Close() }()
 
 	body, err := io.ReadAll(resp.Body)
 	if err != nil {
@@ -691,7 +692,7 @@ func (c *bluecatClient) doJSONWithHeaders(
 	if err != nil {
 		return 0, nil, err
 	}
-	defer resp.Body.Close()
+	defer func() { _ = resp.Body.Close() }()
 
 	respBody, err := io.ReadAll(resp.Body)
 	if err != nil {
@@ -877,10 +878,10 @@ func mapString(obj map[string]any, key string) string {
 	switch v := raw.(type) {
 	case string:
 		return strings.TrimSpace(v)
-	case fmt.Stringer:
-		return strings.TrimSpace(v.String())
 	case json.Number:
 		return v.String()
+	case fmt.Stringer:
+		return strings.TrimSpace(v.String())
 	case float64:
 		return strconv.FormatFloat(v, 'f', -1, 64)
 	default:

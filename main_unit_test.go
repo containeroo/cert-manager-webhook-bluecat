@@ -195,7 +195,9 @@ func TestTriggerQuickDeploy(t *testing.T) {
 		if err != nil {
 			t.Fatalf("failed to read request body: %v", err)
 		}
-		defer r.Body.Close()
+		if err := r.Body.Close(); err != nil {
+			t.Fatalf("failed to close request body: %v", err)
+		}
 
 		var payload map[string]any
 		if err := json.Unmarshal(body, &payload); err != nil {

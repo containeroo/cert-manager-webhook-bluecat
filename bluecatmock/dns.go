@@ -18,7 +18,7 @@ func (e *mockSolver) handleDNSRequest(w dns.ResponseWriter, req *dns.Msg) {
 			}
 		}
 	}
-	w.WriteMsg(msg)
+	_ = w.WriteMsg(msg)
 }
 
 func (e *mockSolver) addDNSAnswer(q dns.Question, msg *dns.Msg, req *dns.Msg) error {

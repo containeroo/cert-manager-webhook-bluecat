@@ -1,5 +1,4 @@
-// package bluecatmock contains a self-contained DNS webhook used by tests.
-// DNS conformance tests
+// Package bluecatmock contains a self-contained DNS webhook used by tests.
 package bluecatmock
 
 import (
@@ -40,7 +39,7 @@ func (e *mockSolver) CleanUp(ch *acme.ChallengeRequest) error {
 	return nil
 }
 
-func (e *mockSolver) Initialize(kubeClientConfig *rest.Config, stopCh <-chan struct{}) error {
+func (e *mockSolver) Initialize(_ *rest.Config, stopCh <-chan struct{}) error {
 	if e.server.PacketConn == nil {
 		conn, err := net.ListenPacket("udp", e.server.Addr)
 		if err != nil {
@@ -77,6 +76,7 @@ func isExpectedServerCloseError(err error) bool {
 	return strings.Contains(msg, "server not started") || strings.Contains(msg, "closed network connection")
 }
 
+// New creates a DNS webhook solver listening on the given port.
 func New(port string) webhook.Solver {
 	e := &mockSolver{
 		name:       "bluecat-mock",
